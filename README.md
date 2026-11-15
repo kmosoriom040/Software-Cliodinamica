@@ -33,6 +33,13 @@ svc = SimulationService(CsvRepository("data/runs"))
 resultado = svc.run(params={"lam": 0.5}, save=True)
 ```
 
+## Entrenar el clasificador
+
+```bash
+pip install -e ".[dev,ml]"
+python scripts/train_classifier.py --n 3000 --out data
+```
+
 ## Estructura
 
 ```
@@ -40,6 +47,8 @@ src/cliodinamica/
   core/          modelos ODE (Strategy), registro (Factory) y solver (Adapter sobre SciPy)
   services/      SimulationService (Facade)
   repositories/  exportación a CSV y SQLite (Repository)
+  ml/            rasgos, etiquetado, dataset (Latin Hypercube) y clasificador MLP
+scripts/         train_classifier.py (genera el dataset y entrena el MLP)
 tests/           pruebas con pytest
 ```
 
@@ -47,6 +56,6 @@ tests/           pruebas con pytest
 
 1. Núcleo numérico y pruebas (hecho)
 2. Servicios (SimulationService) y exportación a CSV y SQLite (hecho)
-3. Generación de datos, etiquetado y clasificador MLP
+3. Generación de datos, etiquetado y clasificador MLP (hecho)
 4. Interfaz Streamlit con gráficos Plotly
 5. Docker, GitHub Actions y PyPI
