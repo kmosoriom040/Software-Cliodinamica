@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import csv
+import io
 import json
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -16,14 +17,20 @@ class CsvRepository:
         self.directory = Path(directory)
         self.directory.mkdir(parents=True, exist_ok=True)
 
-    def save(self, result: SimulationResult) -> str:
+    @staticmethod
+    def render(result: SimulationResult) -> str:
+        """Devuelve el contenido CSV de la serie temporal como texto."""
         tray = result.trajectory
+        buf = io.StringIO()
+        writer = csv.writer(buf, lineterminator="\n")
+        writer.writerow(["t", *tray.state_names])
+        for i, t in enumerate(tray.t):
+            writer.writerow([float(t), *(float(tray.y[j, i]) for j in range(len(tray.y)))])
+        return buf.getvalue()
+
+    def save(self, result: SimulationResult) -> str:
         csv_path = self.directory / f"{result.run_id}.csv"
-        with csv_path.open("w", newline="", encoding="utf-8") as f:
-            writer = csv.writer(f)
-            writer.writerow(["t", *tray.state_names])
-            for i, t in enumerate(tray.t):
-                writer.writerow([float(t), *(float(tray.y[j, i]) for j in range(len(tray.y)))])
+        csv_path.write_text(self.render(result), encoding="utf-8")
 
         meta = {
             "run_id": result.run_id,

@@ -14,8 +14,11 @@ dependencies = ["numpy>=1.26", "scipy>=1.11"]
 
 [project.optional-dependencies]
 ml = ["scikit-learn>=1.4", "pandas>=2.1"]
-app = ["streamlit>=1.35", "plotly>=5.20", "pandas>=2.1"]
+app = ["streamlit>=1.52", "plotly>=5.20", "pandas>=2.1"]
 dev = ["pytest>=8", "ruff>=0.5", "mypy>=1.10"]
+
+[project.scripts]
+cliodinamica-app = "cliodinamica.ui.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

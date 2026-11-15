@@ -33,6 +33,13 @@ svc = SimulationService(CsvRepository("data/runs"))
 resultado = svc.run(params={"lam": 0.5}, save=True)
 ```
 
+## Interfaz
+
+```bash
+pip install -e ".[dev,ml,app]"
+streamlit run src/cliodinamica/ui/app.py   # o: cliodinamica-app
+```
+
 ## Entrenar el clasificador
 
 ```bash
@@ -47,6 +54,7 @@ src/cliodinamica/
   core/          modelos ODE (Strategy), registro (Factory) y solver (Adapter sobre SciPy)
   services/      SimulationService (Facade)
   repositories/  exportación a CSV y SQLite (Repository)
+  ui/            interfaz Streamlit (app.py) y gráficos Plotly (plots.py)
   ml/            rasgos, etiquetado, dataset (Latin Hypercube) y clasificador MLP
 scripts/         train_classifier.py (genera el dataset y entrena el MLP)
 tests/           pruebas con pytest
@@ -57,5 +65,5 @@ tests/           pruebas con pytest
 1. Núcleo numérico y pruebas (hecho)
 2. Servicios (SimulationService) y exportación a CSV y SQLite (hecho)
 3. Generación de datos, etiquetado y clasificador MLP (hecho)
-4. Interfaz Streamlit con gráficos Plotly
+4. Interfaz Streamlit con gráficos Plotly (hecho)
 5. Docker, GitHub Actions y PyPI
