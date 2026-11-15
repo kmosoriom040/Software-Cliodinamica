@@ -89,6 +89,9 @@ class LotkaVolterra:
     def default_y0(self) -> np.ndarray:
         return np.array([15.0, 5.0])
 
+    def equilibrium(self, p: LVParams) -> np.ndarray:
+        return np.array([p.c / p.d, p.a / p.b])
+
     def rhs(self, t: float, y: np.ndarray, p: LVParams) -> np.ndarray:
         x, z = y
         return np.array([p.a * x - p.b * x * z, -p.c * z + p.d * x * z])

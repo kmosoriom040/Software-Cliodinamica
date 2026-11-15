@@ -46,3 +46,31 @@ def test_preset_de_colapso_cambia_la_clase():
     at.selectbox(key="preset").select("Colapso por desigualdad").run()
     assert not at.exception
     assert at.metric[0].value == "colapso"
+
+
+def test_nuevas_pestañas_y_calculos():
+    at = AppTest.from_file(APP, default_timeout=120).run()
+    assert not at.exception
+    assert len(at.tabs) == 7
+    at.slider(key="reg_n").set_value(8)
+    at.slider(key="ens_n").set_value(20)
+    at.button(key="btn_regime").click().run()
+    assert not at.exception
+    at.button(key="btn_sweep").click().run()
+    assert not at.exception
+    at.button(key="btn_ens").click().run()
+    assert not at.exception
+
+
+def test_figuras_de_analisis():
+    from cliodinamica.analysis import regime_map, run_ensemble, sweep_1d
+
+    m = create_model("cliodinamica")
+    p = m.default_params()
+    rm = regime_map(m, p, "lam", [0.1, 0.9], "gamma", [0.01, 0.03], t_end=200, n_points=51)
+    assert len(plots.regime_map_fig(rm, (0.2, 0.02)).data) == 2
+    sw = sweep_1d(m, p, "lam", [0.1, 0.5, 0.9], t_end=200, n_points=51)
+    assert len(plots.bifurcation_fig(sw, "S").data) == 3
+    ens = run_ensemble(m, p, n_runs=10, t_end=100, n_points=51)
+    assert len(plots.fan_chart_fig(ens, "N").data) == 5
+    assert len(plots.probabilities_fig(ens.class_probabilities()).data) == 1

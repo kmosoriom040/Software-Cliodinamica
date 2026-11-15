@@ -8,9 +8,17 @@ from __future__ import annotations
 from dataclasses import asdict
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import streamlit as st
 
+from cliodinamica.analysis import (
+    analyze_equilibrium,
+    elasticities,
+    regime_map,
+    run_ensemble,
+    sweep_1d,
+)
 from cliodinamica.core import create_model
 from cliodinamica.ml import FEATURE_COLUMNS, extract_features, label_trajectory
 from cliodinamica.ml.dataset import INPUT_COLUMNS, PARAM_BOUNDS, STATE_BOUNDS
@@ -129,7 +137,7 @@ if kind_label != "Ninguno":
         mlp_probs = predict_proba(load_classifier(str(path)), kind, params, y0, tray)
     else:
         st.sidebar.info(f"No encontré {path}. Entrena con scripts/train_classifier.py.")
-mlp_label = max(mlp_probs, key=mlp_probs.get) if mlp_probs else None
+mlp_label = max(mlp_probs, key=mlp_probs.__getitem__) if mlp_probs else None
 color = plots.CLASS_COLORS[mlp_label or rule_label]
 
 c1, c2, c3 = st.columns(3)
@@ -141,8 +149,13 @@ if mlp_probs:
                + ", ".join(f"{c} {p:.0%}" for c, p in sorted(mlp_probs.items())))
 st.caption("El MLP se entrenó con R₀ = 1 y con los rangos de los controles.")
 
-tab_ts, tab_2d, tab_3d, tab_exp = st.tabs(
-    ["Series de tiempo", "Plano de fase 2D", "Fase 3D", "Exportar"])
+y0_list = [y0[s] for s in MODEL.state_names]
+sig_base = repr((sorted(params_over.items()), y0_list, t_end))
+param_names = list(PARAM_BOUNDS)
+
+tab_ts, tab_2d, tab_3d, tab_est, tab_reg, tab_inc, tab_exp = st.tabs(
+    ["Series de tiempo", "Plano de fase 2D", "Fase 3D", "Estabilidad", "Regímenes",
+     "Incertidumbre", "Exportar"])
 
 with tab_ts:
     st.plotly_chart(plots.timeseries_fig(tray, color), width="stretch")
@@ -162,6 +175,88 @@ with tab_3d:
     y3 = b.selectbox("Eje Y", MODEL.state_names, index=1, key="y3")
     z3 = c.selectbox("Eje Z", MODEL.state_names, index=3, key="z3")
     st.plotly_chart(plots.phase3d_fig(tray, x3, y3, z3, color), width="stretch")
+
+with tab_est:
+    rep = analyze_equilibrium(MODEL, params)
+    st.subheader("Equilibrio interior")
+    st.write(f"Tipo: **{rep.kind}**. Estable si todas las partes reales de los autovalores "
+             "del Jacobiano son negativas.")
+    a, b = st.columns(2)
+    a.dataframe(pd.DataFrame({"estado": MODEL.state_names, "valor": rep.point}).round(4),
+                hide_index=True)
+    b.dataframe(pd.DataFrame({"parte real": rep.eigenvalues.real,
+                              "parte imaginaria": rep.eigenvalues.imag}).round(5),
+                hide_index=True)
+    st.subheader("Sensibilidad del estado final")
+    st.caption("Elasticidad: cambio relativo del estado final por cada 1% de cambio del "
+               "parámetro (estimada con diferencias centrales).")
+    st.plotly_chart(plots.elasticity_fig(elasticities(MODEL, params, y0=y0_list)),
+                    width="stretch")
+
+with tab_reg:
+    st.subheader("Mapa de regímenes")
+    a, b, c = st.columns(3)
+    px = a.selectbox("Parámetro X", param_names, index=param_names.index("lam"), key="reg_x")
+    py = b.selectbox("Parámetro Y", param_names, index=param_names.index("gamma"), key="reg_y")
+    n_grid = c.slider("Resolución", 8, 40, 20, key="reg_n")
+    sig_reg = repr((sig_base, px, py, n_grid))
+    if px == py:
+        st.warning("Elige dos parámetros distintos.")
+    elif st.button("Calcular mapa", key="btn_regime"):
+        with st.spinner("Simulando la malla..."):
+            st.session_state["regime"] = (sig_reg, regime_map(
+                MODEL, params, px, np.linspace(*PARAM_BOUNDS[px], n_grid),
+                py, np.linspace(*PARAM_BOUNDS[py], n_grid), y0=y0_list, t_end=t_end,
+                n_points=151))
+    if "regime" in st.session_state:
+        sig_saved, rm = st.session_state["regime"]
+        if sig_saved != sig_reg:
+            st.info("Los controles cambiaron desde el último cálculo; vuelve a calcular.")
+        st.plotly_chart(plots.regime_map_fig(
+            rm, (params_over.get(rm.x_param, getattr(params, rm.x_param)),
+                 params_over.get(rm.y_param, getattr(params, rm.y_param)))), width="stretch")
+        st.caption("Fracción de la malla: " + ", ".join(
+            f"{k} {v:.0%}" for k, v in rm.class_fractions().items()))
+
+    st.subheader("Barrido de un parámetro")
+    a, b, c = st.columns(3)
+    sp = a.selectbox("Parámetro", param_names, index=param_names.index("lam"), key="sw_p")
+    ss = b.selectbox("Estado", MODEL.state_names, index=3, key="sw_s")
+    sn = c.slider("Valores", 20, 120, 60, key="sw_n")
+    sig_sw = repr((sig_base, sp, sn))
+    if st.button("Calcular barrido", key="btn_sweep"):
+        with st.spinner("Simulando..."):
+            st.session_state["sweep"] = (sig_sw, sweep_1d(
+                MODEL, params, sp, np.linspace(*PARAM_BOUNDS[sp], sn), y0=y0_list,
+                t_end=t_end, n_points=201))
+    if "sweep" in st.session_state:
+        sig_saved, sw = st.session_state["sweep"]
+        if sig_saved != sig_sw:
+            st.info("Los controles cambiaron desde el último cálculo; vuelve a calcular.")
+        st.plotly_chart(plots.bifurcation_fig(sw, ss), width="stretch")
+
+with tab_inc:
+    st.subheader("Ensamble Monte Carlo")
+    st.caption("Perturba todos los parámetros con ruido lognormal y simula muchas veces para "
+               "estimar la probabilidad de cada régimen.")
+    a, b, c = st.columns(3)
+    rel_sigma = a.slider("Incertidumbre relativa", 0.01, 0.50, 0.10, key="ens_sigma")
+    n_runs = b.slider("Número de corridas", 20, 400, 100, key="ens_n")
+    es = c.selectbox("Estado", MODEL.state_names, index=0, key="ens_s")
+    sig_ens = repr((sig_base, rel_sigma, n_runs))
+    if st.button("Ejecutar ensamble", key="btn_ens"):
+        with st.spinner("Simulando el ensamble..."):
+            st.session_state["ensemble"] = (sig_ens, run_ensemble(
+                MODEL, params, y0=y0_list, n_runs=n_runs, rel_sigma=rel_sigma,
+                t_end=t_end, n_points=t_end + 1))
+    if "ensemble" in st.session_state:
+        sig_saved, ens = st.session_state["ensemble"]
+        if sig_saved != sig_ens:
+            st.info("Los controles cambiaron desde el último cálculo; vuelve a ejecutar.")
+        left, right = st.columns([2, 1])
+        left.plotly_chart(plots.fan_chart_fig(ens, es, color), width="stretch")
+        right.plotly_chart(plots.probabilities_fig(ens.class_probabilities()),
+                           width="stretch")
 
 with tab_exp:
     st.write(f"Simulación `{result.run_id}`  ({result.created_at})")

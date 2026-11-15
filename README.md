@@ -40,6 +40,20 @@ pip install -e ".[dev,ml,app]"
 streamlit run src/cliodinamica/ui/app.py   # o: cliodinamica-app
 ```
 
+## Análisis científico
+
+```python
+from cliodinamica.analysis import analyze_equilibrium, elasticities, regime_map, run_ensemble
+from cliodinamica.core import create_model
+
+m = create_model("cliodinamica")
+p = m.default_params()
+print(analyze_equilibrium(m, p).kind)   # tipo de equilibrio según los autovalores
+print(elasticities(m, p)["lam"])        # sensibilidad del estado final a λ
+ens = run_ensemble(m, p, n_runs=200)    # incertidumbre en los parámetros
+print(ens.class_probabilities())
+```
+
 ## Entrenar el clasificador
 
 ```bash
@@ -54,6 +68,7 @@ src/cliodinamica/
   core/          modelos ODE (Strategy), registro (Factory) y solver (Adapter sobre SciPy)
   services/      SimulationService (Facade)
   repositories/  exportación a CSV y SQLite (Repository)
+  analysis/      estabilidad, sensibilidad, barridos de parámetros y ensamble Monte Carlo
   ui/            interfaz Streamlit (app.py) y gráficos Plotly (plots.py)
   ml/            rasgos, etiquetado, dataset (Latin Hypercube) y clasificador MLP
 scripts/         train_classifier.py (genera el dataset y entrena el MLP)
