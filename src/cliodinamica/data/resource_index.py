@@ -177,6 +177,8 @@ def sample_weight_sensitivity(
         raise ValueError("concentration debe ser positiva y finita.")
 
     year_array, names, matrix = _validate_components(years, components)
+    if not np.any(np.all(np.isfinite(matrix), axis=1)):
+        raise ValueError("Se necesita al menos un año con todos los componentes disponibles.")
     rng = np.random.default_rng(seed)
     weight_samples = rng.dirichlet(
         np.full(len(names), concentration, dtype=float), size=n_samples
