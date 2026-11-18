@@ -1,8 +1,6 @@
 # cliodinamica
 
-Simulador dinámico de sistemas complejos y cliodinámica. Resuelve ODEs acopladas con SciPy
-(población, recursos, desigualdad y estabilidad estatal) y, en etapas posteriores, clasifica
-el estado del sistema (crecimiento, estancamiento, colapso) con un MLP.
+Simulador dinámico de sistemas complejos y cliodinámica. Resuelve ODEs acopladas con SciPy para estudiar la interacción entre población, recursos, desigualdad y estabilidad estatal. Incluye análisis de estabilidad, sensibilidad, barridos de parámetros, ensambles Monte Carlo, una interfaz Streamlit y herramientas de clasificación mediante MLP.
 
 ## Inicio rápido
 
@@ -13,7 +11,7 @@ pip install -e ".[dev]"
 pytest
 ```
 
-## Uso
+## Uso como biblioteca
 
 ```python
 from cliodinamica.core import create_model, simulate
@@ -33,11 +31,42 @@ svc = SimulationService(CsvRepository("data/runs"))
 resultado = svc.run(params={"lam": 0.5}, save=True)
 ```
 
-## Interfaz
+## Interfaz local
 
 ```bash
 pip install -e ".[dev,ml,app]"
 streamlit run src/cliodinamica/ui/app.py   # o: cliodinamica-app
+```
+
+## Ejecutar con Docker
+
+Requisitos: Docker Engine y el complemento Docker Compose.
+
+Construir la imagen e iniciar la aplicación:
+
+```bash
+docker compose up --build
+```
+
+Abrir la aplicación en el navegador:
+
+```text
+http://localhost:8501
+```
+
+Detener el contenedor:
+
+```bash
+docker compose down
+```
+
+La configuración de Compose monta el directorio local `data/` en `/app/data` para conservar datasets y modelos entrenados fuera del contenedor. Si no existen, pueden crearse al ejecutar los comandos correspondientes.
+
+También se puede construir y ejecutar la imagen directamente:
+
+```bash
+docker build -t cliodinamica:local .
+docker run --rm -p 8501:8501 -v "$(pwd)/data:/app/data" cliodinamica:local
 ```
 
 ## Análisis científico
@@ -61,24 +90,36 @@ pip install -e ".[dev,ml]"
 python scripts/train_classifier.py --n 3000 --out data
 ```
 
+El clasificador se entrena con datos sintéticos generados por el propio modelo. Sus métricas evalúan la reproducción de las etiquetas definidas para esos datos; no constituyen por sí solas validación predictiva sobre sociedades o series históricas reales.
+
 ## Estructura
 
-```
+```text
 src/cliodinamica/
-  core/          modelos ODE (Strategy), registro (Factory) y solver (Adapter sobre SciPy)
-  services/      SimulationService (Facade)
-  repositories/  exportación a CSV y SQLite (Repository)
-  analysis/      estabilidad, sensibilidad, barridos de parámetros y ensamble Monte Carlo
-  ui/            interfaz Streamlit (app.py) y gráficos Plotly (plots.py)
-  ml/            rasgos, etiquetado, dataset (Latin Hypercube) y clasificador MLP
-scripts/         train_classifier.py (genera el dataset y entrena el MLP)
-tests/           pruebas con pytest
+  core/          modelos ODE, registro y solver numérico
+  services/      SimulationService
+  repositories/  exportación a CSV y SQLite
+  analysis/      estabilidad, sensibilidad, barridos y ensambles Monte Carlo
+  ui/            interfaz Streamlit y gráficos Plotly
+  ml/             extracción de rasgos, dataset y clasificador MLP
+scripts/          entrenamiento del clasificador
+tests/            pruebas con pytest
 ```
+
+## Alcance y limitaciones
+
+El proyecto proporciona un entorno computacional para simular y analizar sistemas dinámicos de inspiración cliodinámica. Los resultados dependen de la formulación matemática, los parámetros y las condiciones iniciales seleccionadas. La aplicación no debe interpretarse como un predictor empírico validado de trayectorias históricas.
+
+La calibración y validación con series históricas reales, así como la ampliación con indicadores nacionales, quedan fuera del alcance de esta versión.
+
+## Desarrollo y CI
+
+La integración continua ejecuta Ruff y pytest en Python 3.10 y 3.12 mediante GitHub Actions.
 
 ## Hoja de ruta
 
-1. Núcleo numérico y pruebas (hecho)
-2. Servicios (SimulationService) y exportación a CSV y SQLite (hecho)
-3. Generación de datos, etiquetado y clasificador MLP (hecho)
-4. Interfaz Streamlit con gráficos Plotly (hecho)
-5. Docker, GitHub Actions y PyPI
+1. Núcleo numérico y pruebas.
+2. Servicios y persistencia CSV/SQLite.
+3. Generación de datos sintéticos y clasificador MLP.
+4. Interfaz Streamlit y visualizaciones Plotly.
+5. Contenedor Docker y preparación de distribución en PyPI.
