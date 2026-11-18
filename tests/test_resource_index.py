@@ -95,3 +95,12 @@ def test_weight_sensitivity_is_reproducible_and_bounded():
 def test_years_must_be_strictly_increasing():
     with pytest.raises(ValueError):
         build_resource_indices([2001, 2000], {"forest": [0.2, 0.3]})
+
+
+def test_weight_sensitivity_requires_at_least_one_complete_year():
+    with pytest.raises(ValueError):
+        sample_weight_sensitivity(
+            [2000, 2001],
+            {"forest": [np.nan, np.nan], "water": [0.2, 0.3]},
+            n_samples=10,
+        )
