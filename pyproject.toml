@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -9,7 +9,14 @@ description = "Simulador dinámico de sistemas complejos y cliodinámica (ODEs a
 readme = "README.md"
 requires-python = ">=3.10"
 authors = [{ name = "Kevin Osorio" }]
-# Licencia: pendiente de decidir antes de publicar en GitHub/PyPI (MIT, Apache-2.0 o propietaria).
+license = "MIT"
+license-files = ["LICENSE"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
 dependencies = ["numpy>=1.26", "scipy>=1.11"]
 
 [project.optional-dependencies]
