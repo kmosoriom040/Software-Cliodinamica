@@ -92,11 +92,11 @@ $$
 
 Los autovalores de $J$ permiten caracterizar la dinámica linealizada cerca del equilibrio. En términos generales, partes reales negativas indican modos que decaen localmente; una parte real positiva indica al menos una dirección localmente inestable. Los casos con partes reales nulas requieren análisis adicional y no deben clasificarse concluyentemente solo con la linealización.
 
-La pestaña de estabilidad expone los resultados numéricos disponibles: equilibrio, Jacobiana, autovalores y tipo de equilibrio. La interpretación siempre es local y condicionada por el equilibrio encontrado y los parámetros.
+La pestaña de estabilidad presenta los valores del equilibrio, las partes real e imaginaria de los autovalores y el tipo de equilibrio. El Jacobiano se calcula internamente, pero la interfaz actual no muestra la matriz completa. La interpretación siempre es local y condicionada por el equilibrio encontrado y los parámetros.
 
 ## 5. Sensibilidad
 
-El análisis de elasticidades estima cómo responde el estado final ante perturbaciones relativas de parámetros, mediante diferencias finitas centrales. La implementación utiliza un paso relativo por defecto de 0.02 y omite parámetros cuyo valor base es cero, porque una perturbación relativa respecto de cero no está definida.
+El análisis de elasticidades estima cómo responde el estado final ante perturbaciones relativas de parámetros, mediante diferencias finitas centrales. La implementación utiliza un paso relativo por defecto de 0.02, un horizonte de 500 unidades de tiempo y 201 puntos; omite parámetros cuyo valor base es cero, porque una perturbación relativa respecto de cero no está definida.
 
 Una elasticidad aproximada compara el cambio porcentual de una salida con el cambio porcentual de un parámetro. Se define como:
 
