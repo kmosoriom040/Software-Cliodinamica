@@ -1,0 +1,12 @@
+services:
+  cliodinamica:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cliodinamica:local
+    container_name: cliodinamica
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
