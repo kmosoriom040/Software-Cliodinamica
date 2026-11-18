@@ -6,43 +6,42 @@ Simulador dinámico de sistemas complejos y cliodinámica. Resuelve ODEs acoplad
 
 - [Manual de usuario](docs/manual_usuario.md)
 - [Documentación técnica](docs/documentacion_tecnica.md)
-- [Guía de sustentación](docs/guia_sustentacion.md)
 
 ## Inicio rápido
 
-```bash
+\`\`\`bash
 python -m venv .venv
 source .venv/bin/activate        # En Windows: .venv\Scripts\activate
 pip install -e ".[dev]"
 pytest
-```
+\`\`\`
 
 ## Uso como biblioteca
 
-```python
+\`\`\`python
 from cliodinamica.core import create_model, simulate
 
 modelo = create_model("cliodinamica")
 tray = simulate(modelo, t_end=300)
 print(tray.state_names, tray.y.shape)
-```
+\`\`\`
 
 Con el servicio y exportación:
 
-```python
+\`\`\`python
 from cliodinamica.repositories import CsvRepository
 from cliodinamica.services import SimulationService
 
 svc = SimulationService(CsvRepository("data/runs"))
 resultado = svc.run(params={"lam": 0.5}, save=True)
-```
+\`\`\`
 
 ## Interfaz local
 
-```bash
+\`\`\`bash
 pip install -e ".[dev,ml,app]"
 streamlit run src/cliodinamica/ui/app.py   # o: cliodinamica-app
-```
+\`\`\`
 
 ## Ejecutar con Docker
 
@@ -50,34 +49,34 @@ Requisitos: Docker Engine y el complemento Docker Compose.
 
 Construir la imagen e iniciar la aplicación:
 
-```bash
+\`\`\`bash
 docker compose up --build
-```
+\`\`\`
 
 Abrir la aplicación en el navegador:
 
-```text
+\`\`\`text
 http://localhost:8501
-```
+\`\`\`
 
 Detener el contenedor:
 
-```bash
+\`\`\`bash
 docker compose down
-```
+\`\`\`
 
-La configuración de Compose monta el directorio local `data/` en `/app/data` para conservar datasets y modelos entrenados fuera del contenedor. Si no existen, pueden crearse al ejecutar los comandos correspondientes.
+La configuración de Compose monta el directorio local \`data/\` en \`/app/data\` para conservar datasets y modelos entrenados fuera del contenedor. Si no existen, pueden crearse al ejecutar los comandos correspondientes.
 
 También se puede construir y ejecutar la imagen directamente:
 
-```bash
+\`\`\`bash
 docker build -t cliodinamica:local .
 docker run --rm -p 8501:8501 -v "$(pwd)/data:/app/data" cliodinamica:local
-```
+\`\`\`
 
 ## Análisis científico
 
-```python
+\`\`\`python
 from cliodinamica.analysis import analyze_equilibrium, elasticities, regime_map, run_ensemble
 from cliodinamica.core import create_model
 
@@ -87,20 +86,20 @@ print(analyze_equilibrium(m, p).kind)   # tipo de equilibrio según los autovalo
 print(elasticities(m, p)["lam"])        # sensibilidad del estado final a λ
 ens = run_ensemble(m, p, n_runs=200)    # incertidumbre en los parámetros
 print(ens.class_probabilities())
-```
+\`\`\`
 
 ## Entrenar el clasificador
 
-```bash
+\`\`\`bash
 pip install -e ".[dev,ml]"
 python scripts/train_classifier.py --n 3000 --out data
-```
+\`\`\`
 
 El clasificador se entrena con datos sintéticos generados por el propio modelo. Sus métricas evalúan la reproducción de las etiquetas definidas para esos datos; no constituyen por sí solas validación predictiva sobre sociedades o series históricas reales.
 
 ## Estructura
 
-```text
+\`\`\`text
 src/cliodinamica/
   core/          modelos ODE, registro y solver numérico
   services/      SimulationService
@@ -110,7 +109,7 @@ src/cliodinamica/
   ml/             extracción de rasgos, dataset y clasificador MLP
 scripts/          entrenamiento del clasificador
 tests/            pruebas con pytest
-```
+\`\`\`
 
 ## Alcance y limitaciones
 
