@@ -2,6 +2,12 @@
 
 Simulador dinámico de sistemas complejos y cliodinámica. Resuelve ODEs acopladas con SciPy para estudiar la interacción entre población, recursos, desigualdad y estabilidad estatal. Incluye análisis de estabilidad, sensibilidad, barridos de parámetros, ensambles Monte Carlo, una interfaz Streamlit y herramientas de clasificación mediante MLP.
 
+## Documentación
+
+- [Manual de usuario](docs/manual_usuario.md)
+- [Documentación técnica](docs/documentacion_tecnica.md)
+- [Guía de sustentación](docs/guia_sustentacion.md)
+
 ## Inicio rápido
 
 ```bash
