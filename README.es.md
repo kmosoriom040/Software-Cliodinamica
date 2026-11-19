@@ -38,6 +38,7 @@ El proyecto combina una biblioteca de computación científica reutilizable con 
 
 - **[Manual de usuario (Markdown)](docs/manual_usuario.md):** instalación, recorrido por la interfaz, flujos de análisis, exportación, uso del MLP y solución de problemas.
 - **[Documentación técnica](docs/documentacion_tecnica.md):** formulación matemática, arquitectura, métodos numéricos, módulos de análisis y limitaciones metodológicas.
+- **[Manual de usuario en PDF](docs/Manual_de_usuario_Cliodinamica.pdf):** guía ilustrada de 21 páginas con capturas de la interfaz e instrucciones paso a paso.
 
 ## Inicio rápido
 
