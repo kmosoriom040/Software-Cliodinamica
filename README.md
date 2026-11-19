@@ -1,95 +1,100 @@
 # Cliodinámica
 
-**Cliodinámica** es una aplicación de simulación y análisis exploratorio de sistemas dinámicos. Permite estudiar, mediante un modelo matemático, la interacción entre población, recursos, desigualdad y estabilidad estatal.
+**Cliodinámica** is a Python-based simulation and exploratory analysis tool for a conceptual social-dynamics model. It explores the interactions between population, resources, inequality, and state stability through coupled ordinary differential equations (ODEs).
 
-El proyecto combina una biblioteca Python para resolver y analizar ecuaciones diferenciales con una interfaz gráfica construida con Streamlit. La interfaz permite explorar escenarios sin tener que escribir código.
+The project combines a reusable scientific-computing library with an interactive web interface built with Streamlit. Users can configure scenarios, run simulations, and inspect results without writing code.
 
-> **Alcance del modelo:** Cliodinámica es una herramienta computacional exploratoria. Sus resultados dependen de las ecuaciones, los parámetros y las condiciones iniciales seleccionadas. No es un predictor histórico validado ni permite inferir directamente el comportamiento de sociedades reales.
+[English](README.md) | [Español](README.es.md)
 
----
+> **Model scope:** Cliodinámica is an exploratory computational model. Its outputs depend on the equations, parameters, initial conditions, and classification rules selected. It is not an empirically validated historical forecasting system.
 
-## 1. ¿Qué permite hacer?
+## Project highlights
 
-- Simular la evolución temporal de cuatro variables: población (\`N\`), recursos (\`R\`), desigualdad (\`G\`) y estabilidad estatal (\`S\`).
-- Cambiar escenarios, parámetros y condiciones iniciales desde una interfaz gráfica.
-- Visualizar series temporales y trayectorias en planos de fase 2D y 3D.
-- Examinar equilibrios y estabilidad local mediante autovalores del Jacobiano.
-- Estimar sensibilidad de los resultados frente a cambios en los parámetros.
-- Explorar barridos de parámetros y mapas de regímenes.
-- Ejecutar ensambles Monte Carlo para observar la dispersión de resultados.
-- Exportar simulaciones a CSV y almacenarlas en SQLite.
-- Utilizar un clasificador MLP entrenado con datos sintéticos generados por el modelo.
+- **Dynamic simulation:** solve a four-state ODE model for population (N), resources (R), inequality (G), and state stability (S).
+- **Interactive exploration:** configure presets, model parameters, initial conditions, and simulation horizon through a Streamlit interface.
+- **Scientific visualization:** inspect time series, 2D phase-plane trajectories, and 3D phase-space projections.
+- **Stability and sensitivity analysis:** examine an interior equilibrium, its local eigenvalue classification, and parameter elasticities.
+- **Parameter-space exploration:** run one-parameter sweeps and two-parameter regime maps.
+- **Uncertainty analysis:** run Monte Carlo ensembles and visualize percentile bands and class proportions.
+- **Data export:** download simulation time series as CSV or store runs in a local SQLite database.
+- **Machine learning:** train and use an MLP classifier with synthetic data generated from the model.
 
-## 2. Documentación
+## Technology stack
 
-| Documento | Para qué sirve |
+| Area | Technologies |
 |---|---|
-| [Manual de usuario](docs/manual_usuario.md) | Instalación, recorrido por la interfaz, explicación de las pestañas, ejemplos de uso y solución de problemas. |
-| [Documentación técnica](docs/documentacion_tecnica.md) | Arquitectura del proyecto, formulación matemática, solver, análisis numérico, aprendizaje automático y limitaciones. |
+| Language | Python 3.10+ |
+| Numerical computing | NumPy, SciPy |
+| Data handling | Pandas |
+| Machine learning | scikit-learn, MLP |
+| Interactive interface | Streamlit |
+| Visualization | Plotly |
+| Persistence | CSV, SQLite |
+| Deployment | Docker, Docker Compose |
+| Testing and quality | pytest, Ruff, GitHub Actions |
+| Distribution | PyPI |
 
-## 3. Instalar y ejecutar la aplicación
+## Documentation
 
-La forma más sencilla de probar Cliodinámica es instalarla desde PyPI. Se requiere Python 3.10 o posterior.
+- **[User manual (Markdown)](docs/manual_usuario.md):** installation, interface walkthrough, analysis workflows, exports, MLP usage, and troubleshooting.
+- **[Technical documentation](docs/documentacion_tecnica.md):** mathematical formulation, software architecture, numerical methods, analysis modules, and methodological limitations.
+- **[PDF user manual](docs/Manual_de_usuario_Cliodinamica.pdf):** illustrated 21-page guide with interface screenshots and step-by-step workflows (Spanish).
 
-### Linux
+## Quick start
 
-\`\`\`bash
+Python 3.10 or later is required.
+
+### Install from PyPI
+
+The recommended installation includes the interface and machine-learning dependencies:
+
+**Linux / macOS**
+
+```bash
 python -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 pip install "cliodinamica[ml,app]"
 cliodinamica-app
-\`\`\`
+```
 
-### Windows (PowerShell)
+**Windows PowerShell**
 
-\`\`\`powershell
+```powershell
 python -m venv .venv
 .venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 pip install "cliodinamica[ml,app]"
 cliodinamica-app
-\`\`\`
+```
 
-Cuando Streamlit inicie, abrir la dirección que aparece en la terminal. Normalmente es:
+Once Streamlit starts, open the local URL printed in the terminal (usually http://localhost:8501).
 
-\`\`\`text
-http://localhost:8501
-\`\`\`
+### Run with Docker
 
-La instalación incluye los extras \`app\` (interfaz) y \`ml\` (funciones de aprendizaje automático).
+Docker Engine and Docker Compose are required. From the repository root:
 
-## 4. Ejecutar con Docker
-
-Como alternativa, se puede ejecutar la interfaz en un contenedor. Se necesita Docker Engine y Docker Compose.
-
-Desde la raíz del repositorio:
-
-\`\`\`bash
+```bash
 docker compose up --build
-\`\`\`
+```
 
-Abrir [http://localhost:8501](http://localhost:8501). Para detener la aplicación:
+Open http://localhost:8501. Stop the application with:
 
-\`\`\`bash
+```bash
 docker compose down
-\`\`\`
+```
 
-Compose monta el directorio local \`data/\` dentro del contenedor en \`/app/data\`, para conservar los datos y modelos almacenados allí.
+The Compose configuration mounts the local "data/" directory at "/app/data" so that generated data and model files can persist outside the container.
 
-## 5. Usar Cliodinámica como biblioteca Python
+## Use as a Python library
 
-También es posible utilizar el núcleo sin abrir la interfaz gráfica.
+The numerical core can be used independently of the graphical interface:
 
-Instalar la biblioteca:
-
-\`\`\`bash
+```bash
 pip install cliodinamica
-\`\`\`
+```
 
-Ejemplo mínimo de simulación:
-
-\`\`\`python
+```python
 from cliodinamica.core import create_model, simulate
 
 model = create_model("cliodinamica")
@@ -97,83 +102,91 @@ trajectory = simulate(model, t_end=300)
 
 print(trajectory.state_names)
 print(trajectory.y.shape)
-\`\`\`
+```
 
-La función \`create_model\` obtiene una instancia del modelo registrado y \`simulate\` calcula su trayectoria durante el intervalo solicitado.
+The model factory returns a registered model, and "simulate" computes its trajectory over the requested time interval.
 
-Para consultar las opciones de análisis, persistencia y sus argumentos, revisar la [documentación técnica](docs/documentacion_tecnica.md) y los módulos del paquete.
+## Machine-learning classifier
 
-## 6. Entrenar el clasificador MLP
+The optional MLP classifier uses synthetic datasets generated by simulating the model and assigning labels with predefined rules. To train the classifiers, clone the repository and run the training script from its root:
 
-El clasificador es opcional. La interfaz puede ejecutarse con **Ninguno** en el selector del panel lateral. Para utilizar las opciones MLP se necesitan los archivos del modelo entrenado.
-
-El script de entrenamiento se ejecuta desde un clon del repositorio:
-
-\`\`\`bash
+```bash
 pip install -e ".[ml]"
 python scripts/train_classifier.py --n 3000 --seed 0 --out data
-\`\`\`
+```
 
-Los archivos generados se guardan en \`data/\`. En la interfaz, indicar esa carpeta en **Carpeta del modelo** y seleccionar el tipo de rasgos deseado.
+The generated model files are saved in "data/". In the application, set the model folder to "data" and choose either trajectory features or input-only features.
 
-**Importante:** el clasificador se entrena con simulaciones y etiquetas sintéticas producidas por el propio modelo. Sus resultados no equivalen a predicciones validadas sobre datos históricos reales.
+**Important:** the classifier learns to reproduce labels assigned to synthetic model outputs. Its metrics do not demonstrate predictive validity on real historical data or societies.
 
-## 7. Estructura del proyecto
+## Repository structure
 
-\`\`\`text
+```text
 src/cliodinamica/
-├── core/          Modelos diferenciales, registro y solver numérico
-├── services/      Servicios que coordinan las simulaciones
-├── repositories/  Persistencia y exportación CSV / SQLite
-├── analysis/      Estabilidad, sensibilidad, barridos y ensambles
-├── ml/            Datos sintéticos, rasgos y clasificación
-└── ui/            Interfaz Streamlit y gráficos Plotly
+├── core/          ODE models, model registry, and numerical solver
+├── services/      Simulation use cases and orchestration
+├── repositories/  CSV export and SQLite persistence
+├── analysis/      Stability, sensitivity, sweeps, and Monte Carlo ensembles
+├── ml/            Synthetic datasets, feature extraction, and classifiers
+└── ui/            Streamlit application and Plotly visualizations
 
-scripts/           Herramientas ejecutables desde el repositorio
-tests/             Pruebas automatizadas
-docs/              Manual de usuario y documentación técnica
-\`\`\`
+scripts/           Repository-level utilities, including classifier training
+tests/             Automated tests
+docs/              User and technical documentation
+```
 
-## 8. Desarrollo y pruebas
+## Development setup
 
-Para trabajar sobre el código fuente:
+Clone the repository and install the development, ML, and application dependencies:
 
-\`\`\`bash
+```bash
 git clone https://github.com/kmosoriom040/Software-Cliodinamica.git
 cd Software-Cliodinamica
 
 python -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev,ml,app]"
-\`\`\`
+```
 
-Ejecutar las pruebas:
+Run the test suite:
 
-\`\`\`bash
+```bash
 pytest
-\`\`\`
+```
 
-Ejecutar la interfaz directamente desde el repositorio:
+Run the Streamlit interface from the source tree:
 
-\`\`\`bash
+```bash
 streamlit run src/cliodinamica/ui/app.py
-\`\`\`
+```
 
-La integración continua del repositorio ejecuta comprobaciones de estilo y pruebas automatizadas en Python 3.10 y 3.12.
+The repository's GitHub Actions workflow runs code-quality checks and automated tests on Python 3.10 and 3.12.
 
-## 9. Limitaciones conocidas
+## Architecture overview
 
-- El modelo representa un sistema conceptual de cuatro variables; no es una descripción completa de una sociedad.
-- Los parámetros no deben interpretarse como estimaciones empíricas calibradas.
-- Los resultados de estabilidad son locales al equilibrio analizado.
-- Los mapas de regímenes y las clases son resultados de las reglas implementadas.
-- Los ensambles Monte Carlo describen la variabilidad bajo las perturbaciones configuradas, no probabilidades históricas.
-- El MLP reproduce etiquetas construidas a partir de datos sintéticos del modelo.
-- La calibración con datos históricos y la validación predictiva externa no forman parte de esta versión.
+The codebase separates the mathematical core from the interface and supporting features:
 
-## 10. Repositorio y distribución
+- "core" defines the ODE models, model registry/factory, and numerical integration.
+- "services" coordinates simulation use cases.
+- "analysis" contains equilibrium, stability, sensitivity, parameter sweeps, and ensemble analysis.
+- "ml" handles synthetic dataset generation, feature extraction, rule-based labels, and classifiers.
+- "repositories" provides CSV and SQLite persistence.
+- "ui" contains the Streamlit application and Plotly figures.
 
-- **Código fuente:** [GitHub — Software-Cliodinamica](https://github.com/kmosoriom040/Software-Cliodinamica)
-- **Paquete:** [PyPI — cliodinamica](https://pypi.org/project/cliodinamica/)
-- **Interfaz:** Streamlit
-- **Licencia:** MIT
+The core also includes a Lotka–Volterra reference model. The current graphical interface is focused on Cliodinámica and does not provide a model selector for switching to Lotka–Volterra.
+
+## Limitations
+
+- The model is a conceptual four-variable system, not a comprehensive representation of a society.
+- Model parameters are illustrative and are not calibrated against historical observations in this release.
+- Stability analysis describes local behavior around the computed equilibrium.
+- Regime labels are operational categories assigned by the project's classification rules.
+- Monte Carlo proportions depend on the parameter-perturbation setup and are not empirical event probabilities.
+- The MLP is trained on synthetic simulations and rule-derived labels.
+- Historical calibration and independent predictive validation are outside the scope of this version.
+
+## Links
+
+- **Source code:** https://github.com/kmosoriom040/Software-Cliodinamica
+- **PyPI package:** https://pypi.org/project/cliodinamica/
+- **License:** MIT
