@@ -38,7 +38,6 @@ El proyecto combina una biblioteca de computación científica reutilizable con 
 
 - **[Manual de usuario (Markdown)](docs/manual_usuario.md):** instalación, recorrido por la interfaz, flujos de análisis, exportación, uso del MLP y solución de problemas.
 - **[Documentación técnica](docs/documentacion_tecnica.md):** formulación matemática, arquitectura, métodos numéricos, módulos de análisis y limitaciones metodológicas.
-- **[Manual de usuario en PDF]:** guía ilustrada con capturas de pantalla; estará disponible en la carpeta de documentación cuando se suba al repositorio.
 
 ## Inicio rápido
 
