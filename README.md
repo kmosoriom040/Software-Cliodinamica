@@ -38,7 +38,6 @@ The project combines a reusable scientific-computing library with an interactive
 
 - **[User manual (Markdown)](docs/manual_usuario.md):** installation, interface walkthrough, analysis workflows, exports, MLP usage, and troubleshooting.
 - **[Technical documentation](docs/documentacion_tecnica.md):** mathematical formulation, software architecture, numerical methods, analysis modules, and methodological limitations.
-- **[PDF user manual]:** screenshot-based guide — available in the repository's documentation folder once uploaded.
 
 ## Quick start
 
