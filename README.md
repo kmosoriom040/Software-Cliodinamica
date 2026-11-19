@@ -38,6 +38,7 @@ The project combines a reusable scientific-computing library with an interactive
 
 - **[User manual (Markdown)](docs/manual_usuario.md):** installation, interface walkthrough, analysis workflows, exports, MLP usage, and troubleshooting.
 - **[Technical documentation](docs/documentacion_tecnica.md):** mathematical formulation, software architecture, numerical methods, analysis modules, and methodological limitations.
+- **[PDF user manual](docs/Manual_de_usuario_Cliodinamica.pdf):** illustrated 21-page guide with interface screenshots and step-by-step workflows (Spanish).
 
 ## Quick start
 
